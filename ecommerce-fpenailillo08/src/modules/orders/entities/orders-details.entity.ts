@@ -1,0 +1,21 @@
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, ManyToMany, JoinTable } from "typeorm"
+import { Order } from "./order.entity"
+import { Product } from "../../products/entities/product.entity"
+
+@Entity()
+export class OrderDetails {
+    @PrimaryGeneratedColumn("uuid")
+    id!: string
+    @Column({
+        type: "decimal",
+        precision: 10,
+        scale: 2
+    })
+    price!: number
+    @OneToOne(() => Order, order => order.orderDetails)
+    @JoinColumn()
+    order!: Order
+    @ManyToMany(() => Product, product => product.orderDetails)
+    @JoinTable()
+    products!: Product[]
+}
