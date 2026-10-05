@@ -1,8 +1,9 @@
-export interface IProduct {
-    id: number,
-    name: string,
-    description: string,
-    price: number,
-    stock: boolean,
-    imgUrl: string
+import { Category } from '../../categories/entities/category.entity';
+
+export interface IProductSeed {
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    category: Category;
 }

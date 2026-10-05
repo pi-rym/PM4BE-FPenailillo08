@@ -1,35 +1,27 @@
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from './entities/product.entity';
 import { Injectable } from '@nestjs/common';
-import { IProduct } from './interfaces/product.interface';
+import { IProductSeed } from './interfaces/product.interface';
 
 @Injectable()
 export class ProductsRepository {
-    private products: IProduct[] = [
-  {
-    id: 1,
-    name: 'Notebook Lenovo IdeaPad',
-    description: 'Notebook con 16GB de RAM y SSD de 512GB',
-    price: 950000,
-    stock: true,
-    imgUrl: 'https://example.com/notebook.jpg',
-  },
-  {
-    id: 2,
-    name: 'Mouse Logitech',
-    description: 'Mouse inalámbrico ergonómico',
-    price: 35000,
-    stock: true,
-    imgUrl: 'https://example.com/mouse.jpg',
-  },
-  {
-    id: 3,
-    name: 'Teclado Redragon',
-    description: 'Teclado mecánico para escritorio',
-    price: 75000,
-    stock: false,
-    imgUrl: 'https://example.com/teclado.jpg',
-  },
-];
-getProducts(): IProduct[] {
-    return this.products;
+  constructor(
+    @InjectRepository(Product)
+    private readonly productsRepository: Repository<Product>
+  ){}
+
+async getProducts(): Promise<Product[]> {
+    return await this.productsRepository.find()
   }
+async addProducts(products: IProductSeed[]): Promise<Product[]>{
+  const existingProducts = await this.getProducts()
+
+  const newProducts = products.filter(product => !existingProducts.some(existingProducts => existingProducts.name === product.name))
+
+  const createdProducts = this.productsRepository.create(newProducts)
+  const savedProducts = await this.productsRepository.save(createdProducts)
+
+  return savedProducts
+}
 }
