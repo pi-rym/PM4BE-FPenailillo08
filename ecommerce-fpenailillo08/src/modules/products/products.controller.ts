@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { IProduct } from './interfaces/product.interface';
+import { Product } from './entities/product.entity';
 import { AuthGuard } from '../auth/auth.guard';
 
 //Crear todos los endpoints CRUD para Products y Users 
@@ -12,8 +12,13 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
 
     @Get()
-    getProducts(): IProduct[] {
+    getProducts(): Promise<Product[]> {
         return this.productsService.getProducts();
+    }
+
+    @Get("seeder")
+    async getSeeder(){
+        return await this.productsService.seedProducts()
     }
 
     @Get(":id")
