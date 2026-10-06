@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { IUser } from './interfaces/user.interface';
 import { AuthGuard } from '../auth/auth.guard';
+import { User } from './entities/user.entity';
 
 //Crear todos los endpoints CRUD para Products y Users 
 //(GET, GET{id}, POST, PUT{id}, DELETE{id}).
@@ -14,14 +14,14 @@ export class UsersController {
 
     @Get()
     @UseGuards(AuthGuard)
-    getUsers(): IUser[] {
-        return this.usersService.getUsers();
+    async getUsers(): Promise<User[]>  {
+        return await this.usersService.getUsers();
     }
 
     @Get(":id")
     @UseGuards(AuthGuard)
-    getUserById(): string {
-        return "Este endpoint devuelve un usuario por id"
+    async getUserById(@Param("id")id: string): Promise<User | null> {
+        return await this.usersService.getUserById(id);
     }
 
     @Post()
