@@ -14,7 +14,7 @@ export const typeOrmConfig = (configService: ConfigService,): TypeOrmModuleOptio
     username: configService.get("DB_USERNAME"),
     password: configService.get("DB_PASSWORD"),
     database: configService.get("DB_NAME"),
-    synchronize: true,
+    synchronize: false,
     logging: true,
     dropSchema: false,
     entities: [User, Product,Category, Order, OrderDetails],
