@@ -19,7 +19,8 @@ export class User {
     email!: string
     @Column({
         type: "varchar",
-        length: 20
+        length: 20,
+        select: false
     })
     password!: string
     @Column({

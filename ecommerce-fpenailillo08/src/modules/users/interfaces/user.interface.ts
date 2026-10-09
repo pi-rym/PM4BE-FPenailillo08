@@ -1,26 +1,13 @@
-// id:number
 
-// email: string
 
-// name: string
-
-// password: string
-
-// address: string
-
-// phone: string
-
-// country?: string | undefined
-
-// city?: string | undefined
-
-export interface IUser {
-    id:number,
-    email: string,
+export interface ICreateUser{
     name: string,
+    email: string,
     password: string,
     address: string,
-    phone: string,
-    country?: string | undefined,
-    city?: string | undefined,
+    phone: number,
+    country: string,
+    city: string,
 }
+
+export interface IUpdateUser extends Partial<ICreateUser>{}

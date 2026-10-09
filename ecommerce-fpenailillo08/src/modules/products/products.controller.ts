@@ -1,7 +1,8 @@
-import { Controller, Get, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { AuthGuard } from '../auth/auth.guard';
+import type { ICreateProduct, IUpdateProduct } from './interfaces/product.interface';
 
 //Crear todos los endpoints CRUD para Products y Users 
 //(GET, GET{id}, POST, PUT{id}, DELETE{id}).
@@ -12,8 +13,10 @@ export class ProductsController {
     constructor(private readonly productsService: ProductsService) {}
 
     @Get()
-    getProducts(): Promise<Product[]> {
-        return this.productsService.getProducts();
+    async getProducts(@Query("page")page:string = "1",@Query("limit")limit:string = "5"): Promise<Product[]> {
+        const pageNumber = Number(page)
+        const limitNumber = Number(limit)
+        return await this.productsService.getProducts(pageNumber,limitNumber);
     }
 
     @Get("seeder")
@@ -22,20 +25,29 @@ export class ProductsController {
     }
 
     @Get(":id")
-    getProductsById(): string {
-        return "Este endpoint devuelve un productor por ID"
+    async getProductsById(@Param("id")id:string): Promise<Product | null> {
+        return await this.productsService.getProductById(id)
     }
 
     @Post()
     @UseGuards(AuthGuard)
-    createProduct(): string {
-        return "Este endpoint devuelve un nuevo producto"
+    async createProduct(@Body() product: ICreateProduct): Promise<{id:string}>{
+        const newProduct = await this.productsService.createProduct(product)
+        return {id: newProduct.id}
     }
 
     @Put(":id")
     @UseGuards(AuthGuard)
-    updateProduct(): string{
-        return "Este endpoint actualiza un producto"
+    async updateProduct(@Param("id") id:string,@Body() product:IUpdateProduct): Promise<{id:string}>{
+        const updatedProduct = await this.productsService.updateProducts(id,product)
+        return{id:updatedProduct.id}
+    }
+
+    @Delete(":id")
+    @UseGuards(AuthGuard)
+    async deleteProduct(@Param("id")id:string):Promise<{id:string}>{
+        const deletedProduct= await this.productsService.deleteProducts(id)
+        return {id: deletedProduct.id}
     }
 
 }

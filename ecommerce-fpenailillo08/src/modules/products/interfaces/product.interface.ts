@@ -7,3 +7,13 @@ export interface IProductSeed {
     stock: number;
     category: Category;
 }
+
+export interface ICreateProduct{
+    name: string;
+    description: string;
+    price: number;
+    stock: number;
+    categoryId: string;
+}
+
+export interface IUpdateProduct extends Partial<ICreateProduct>{}
