@@ -75,8 +75,9 @@ export class UsersRepository {
 
     if(!existingUser) throw new Error("Usuario inexistente")
 
-    const deletedUser = await this.usersRepository.remove(existingUser)
-    return {id:deletedUser.id}
+    await this.usersRepository.remove(existingUser)
+    
+    return {id}
   }
 }
     

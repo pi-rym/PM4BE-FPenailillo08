@@ -16,6 +16,9 @@ export class ProductsController {
     async getProducts(@Query("page")page:string = "1",@Query("limit")limit:string = "5"): Promise<Product[]> {
         const pageNumber = Number(page)
         const limitNumber = Number(limit)
+
+        //VALIDACION NAN
+
         return await this.productsService.getProducts(pageNumber,limitNumber);
     }
 

@@ -46,6 +46,8 @@ export class OrderRepository{
             where: {id: In(productIds)}
         })
 
+        if(foundProducts.length !== productIds.length) throw new Error("Uno o mas productos no fueron encontrados")
+
         const availableProducts = foundProducts.filter(product => product.stock > 0)
         let total = 0
 

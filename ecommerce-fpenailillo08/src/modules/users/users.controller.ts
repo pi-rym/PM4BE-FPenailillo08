@@ -18,6 +18,9 @@ export class UsersController {
     async getUsers(@Query("page")page:string = "1",@Query("limit")limit:string = "5"): Promise<User[]>  {
         const pageNumber = Number(page)
         const limitNumber = Number(limit)
+
+        //VALIDACION NAN
+        //NO DEVOLVER PASSWORD
         
         return await this.usersService.getUsers(pageNumber,limitNumber);
     }
@@ -26,6 +29,7 @@ export class UsersController {
     @UseGuards(AuthGuard)
     async getUserById(@Param("id")id: string): Promise<User | null> {
         return await this.usersService.getUserById(id);
+        //NO DEVOLVER PASSWORD
     }
 
     @Post()
