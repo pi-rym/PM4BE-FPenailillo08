@@ -11,7 +11,6 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { CategoriesService } from './modules/categories/categories.service';
 import { ProductsService } from './modules/products/products.service';
-import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal: true}),
@@ -20,7 +19,7 @@ import { FilesModule } from './files/files.module';
       inject:[ConfigService],
       useFactory: (configService: ConfigService) => typeOrmConfig(configService)
     }),
-    ProductsModule, UsersModule, AuthModule, CategoriesModule, OrdersModule, FilesModule],
+    ProductsModule, UsersModule, AuthModule, CategoriesModule, OrdersModule,],
   controllers: [AppController],
   providers: [AppService],
 })
