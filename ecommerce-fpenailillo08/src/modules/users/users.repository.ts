@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
-import { ICreateUser, IUpdateUser } from './interfaces/user.interface';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 
 @Injectable()
 export class UsersRepository {
@@ -21,7 +21,7 @@ export class UsersRepository {
   }
 
   async getUserById(id: string): Promise<User | null>{
-    return await this.usersRepository.findOne({
+    const foundUser = await this.usersRepository.findOne({
       where: {id},
       relations:{
         orders: true
@@ -33,19 +33,22 @@ export class UsersRepository {
         }
       }
     })
+    if (!foundUser) throw new NotFoundException ("No se encontró el usuario")
+
+    return foundUser
   }
 
-  async createUser(user:ICreateUser): Promise<User>{
+  async createUser(user:CreateUserDto): Promise<User>{
     const newUser = this.usersRepository.create(user)
     const savedUser= await this.usersRepository.save(newUser)
 
     return savedUser
   }
 
-  async updateUser(id:string,user:IUpdateUser): Promise<User>{
+  async updateUser(id:string,user:UpdateUserDto): Promise<User>{
     const existingUser = await this.getUserById(id)
 
-    if(!existingUser) throw new Error("Usuario inexistente")
+    if(!existingUser) throw new NotFoundException("No se encontro el usuario")
 
     if(user.name !== undefined){
       existingUser.name = user.name
@@ -73,7 +76,7 @@ export class UsersRepository {
   async deleteUser(id:string): Promise<{id:string}>{
     const existingUser = await this.getUserById(id)
 
-    if(!existingUser) throw new Error("Usuario inexistente")
+    if(!existingUser) throw new NotFoundException("No se encontro el usuario")
 
     await this.usersRepository.remove(existingUser)
     

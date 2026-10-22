@@ -5,6 +5,8 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  //whitelist: true => Todo lo que te envien de mas que no se utilice en el DTO no lo muevas entre capas
+  app.useGlobalPipes(new ValidationPipe({whitelist: true}))
 
   app.use(loggerGlobal);
 

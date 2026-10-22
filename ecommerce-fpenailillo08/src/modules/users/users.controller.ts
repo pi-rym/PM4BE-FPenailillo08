@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Post, Put, UseGuards, Body, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Param, Post, Put, UseGuards, Body, Delete, Query, ParseUUIDPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../auth/auth.guard';
 import { User } from './entities/user.entity';
-import type { ICreateUser, IUpdateUser } from './interfaces/user.interface';
+import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 
 //Crear todos los endpoints CRUD para Products y Users 
 //(GET, GET{id}, POST, PUT{id}, DELETE{id}).
@@ -27,27 +27,27 @@ export class UsersController {
 
     @Get(":id")
     @UseGuards(AuthGuard)
-    async getUserById(@Param("id")id: string): Promise<User | null> {
+    async getUserById(@Param("id", ParseUUIDPipe)id: string): Promise<User | null> {
         return await this.usersService.getUserById(id);
         //NO DEVOLVER PASSWORD
     }
 
     @Post()
-    async createUser(@Body()user:ICreateUser): Promise<{id:string}> {
+    async createUser(@Body()user:CreateUserDto): Promise<{id:string}> {
         const createdUser = await this.usersService.createUser(user)
         return {id: createdUser.id}
     }
 
     @Put(":id")
     @UseGuards(AuthGuard)
-    async updateUser(@Param("id")id:string,@Body()user:IUpdateUser): Promise<{id:string}> {
+    async updateUser(@Param("id", ParseUUIDPipe)id:string,@Body()user:UpdateUserDto): Promise<{id:string}> {
         const updatedUser = await this.usersService.updateUser(id,user)
         return {id:updatedUser.id} 
     }
 
     @Delete(":id")
     @UseGuards(AuthGuard)
-    async deleteUser(@Param("id")id:string): Promise<{id:string}>{
+    async deleteUser(@Param("id",ParseUUIDPipe)id:string): Promise<{id:string}>{
         const deletedUser = await this.usersService.deleteUser(id)
         return {id:deletedUser.id}
     }

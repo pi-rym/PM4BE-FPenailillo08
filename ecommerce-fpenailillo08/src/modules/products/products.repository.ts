@@ -1,7 +1,7 @@
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ICreateProduct, IProductSeed, IUpdateProduct } from './interfaces/product.interface';
 import { Category } from '../categories/entities/category.entity';
 
@@ -36,7 +36,7 @@ async createProduct(product: ICreateProduct): Promise<Product>{
     where: {id: product.categoryId}
   })
 
-  if(!existingCategory) throw new Error("Categoria inexistente")
+  if(!existingCategory) throw new NotFoundException("Categoria inexistente")
    const newProduct = this.productsRepository.create({
     name: product.name,
     description: product.description,
@@ -52,7 +52,7 @@ async createProduct(product: ICreateProduct): Promise<Product>{
 async updateProducts(id: string, product: IUpdateProduct): Promise<Product>{
   const existingProduct = await this.getProductById(id)
 
-  if(!existingProduct) throw new Error("Producto inexistente")
+  if(!existingProduct) throw new NotFoundException("Producto inexistente")
 
   if(product.price !== undefined){
     existingProduct.price = product.price
@@ -70,7 +70,7 @@ async updateProducts(id: string, product: IUpdateProduct): Promise<Product>{
     const existingCategory = await this.categoriesRepository.findOne({
       where: {id: product.categoryId}
     })
-    if (!existingCategory) throw new Error("Categoria inexistente")
+    if (!existingCategory) throw new NotFoundException("Categoria inexistente")
     existingProduct.category = existingCategory
   }
 
@@ -81,7 +81,7 @@ async updateProducts(id: string, product: IUpdateProduct): Promise<Product>{
 async deleteProducts(id:string): Promise<{id:string}>{
   const existingProduct = await this.getProductById(id)
 
-  if(!existingProduct) throw new Error("Producto inexistente")
+  if(!existingProduct) throw new NotFoundException("Producto inexistente")
   
   const deletedProduct = await this.productsRepository.remove(existingProduct)
 

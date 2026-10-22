@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Order } from "./entities/order.entity";
 import { In, Repository } from "typeorm";
@@ -39,14 +39,14 @@ export class OrderRepository{
         where: {id: userId},
        }) 
 
-       if(!user) throw new Error("Usuario no encontrado")
+       if(!user) throw new NotFoundException("Usuario no encontrado")
 
         const productIds = products.map(product => product.id)
         const foundProducts = await this.productsRepository.find({
             where: {id: In(productIds)}
         })
 
-        if(foundProducts.length !== productIds.length) throw new Error("Uno o mas productos no fueron encontrados")
+        if(foundProducts.length !== productIds.length) throw new NotFoundException("Uno o mas productos no fueron encontrados")
 
         const availableProducts = foundProducts.filter(product => product.stock > 0)
         let total = 0

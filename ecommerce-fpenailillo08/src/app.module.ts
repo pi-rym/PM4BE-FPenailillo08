@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './modules/products/products.module';
@@ -9,6 +9,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { typeOrmConfig } from './config/typeorm';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { CategoriesService } from './modules/categories/categories.service';
+import { ProductsService } from './modules/products/products.service';
+import { FilesModule } from './files/files.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal: true}),
@@ -17,8 +20,21 @@ import { OrdersModule } from './modules/orders/orders.module';
       inject:[ConfigService],
       useFactory: (configService: ConfigService) => typeOrmConfig(configService)
     }),
-    ProductsModule, UsersModule, AuthModule, CategoriesModule, OrdersModule],
+    ProductsModule, UsersModule, AuthModule, CategoriesModule, OrdersModule, FilesModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule{}
+export class AppModule implements OnApplicationBootstrap{
+  constructor(
+    private readonly categoriesService: CategoriesService,
+    private readonly productsService: ProductsService
+  ){}
+
+  async onApplicationBootstrap() {
+    await this.categoriesService.seedCategories()
+    console.log("Categorias cargadas...")
+
+    await this.productsService.seedProducts()
+    console.log("Productos cargados...")
+  }
+}
