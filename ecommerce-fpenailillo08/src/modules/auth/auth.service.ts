@@ -1,4 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { UsersRepository } from '../users/users.repository';
+import { CreateUserDto } from '../users/dto/users.dto';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
-export class AuthService {}
+export class AuthService {
+    constructor(private readonly usersRepository: UsersRepository,
+        private readonly jwtService: JwtService
+    ){}
+
+    getAuth():string{
+        return "Auth..."
+    }
+
+    async signIn(email:string, password: string){
+        const foundUser = await this.usersRepository.getUserByEmail(email)
+
+        if(!foundUser) throw new ForbiddenException("Email o password incorrectos")
+
+        const validPassword = await bcrypt.compare(password, foundUser.password)
+
+        if(!validPassword) throw new ForbiddenException("Email o password incorrectos")
+
+        const payload = {id: foundUser.id, roles: foundUser.isAdmin ? "admin": "user"}
+        const token = this.jwtService.sign(payload)
+
+        return {message: "Usuario logueado", token}
+    }
+
+    async signUp(newUserData: CreateUserDto){
+        const {email, password} = newUserData
+
+        const foundUser = await this.usersRepository.getUserByEmail(email)
+
+        if(foundUser) throw new BadRequestException("El email ya esta registrado")
+
+        const hashedPassword = await bcrypt.hash(password, 10) //Password p/hashear y valor de costo (veces que se hashea dicho password)
+
+        return await this.usersRepository.createUser({
+            ...newUserData,
+            password: hashedPassword
+        })
+    }   
+}

@@ -19,7 +19,7 @@ export class User {
     email!: string
     @Column({
         type: "varchar",
-        length: 20,
+        length: 60,
         select: false
     })
     password!: string
@@ -41,8 +41,10 @@ export class User {
         length: 50
     })
     city!: string
-    // @Column()
-    // isAdmin!: boolean
+     @Column({
+        default: false,
+     })
+    isAdmin!: boolean
      @OneToMany(() => Order, (order) => order.user)
      orders!: Order[]
 }

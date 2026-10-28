@@ -20,7 +20,7 @@ export class UsersRepository {
     })
   }
 
-  async getUserById(id: string): Promise<User | null>{
+  async getUserById(id: string): Promise<Omit<User, "password" | "isAdmin">>{
     const foundUser = await this.usersRepository.findOne({
       where: {id},
       relations:{
@@ -35,7 +35,13 @@ export class UsersRepository {
     })
     if (!foundUser) throw new NotFoundException ("No se encontró el usuario")
 
-    return foundUser
+    const {password, isAdmin, ...filteredUser} = foundUser
+
+    return filteredUser
+  }
+
+  async getUserByEmail(email:string): Promise<User | null>{
+    return await this.usersRepository.findOneBy({email})
   }
 
   async createUser(user:CreateUserDto): Promise<User>{
@@ -74,12 +80,10 @@ export class UsersRepository {
   }
 
   async deleteUser(id:string): Promise<{id:string}>{
-    const existingUser = await this.getUserById(id)
+    const result = await this.usersRepository.delete(id)
 
-    if(!existingUser) throw new NotFoundException("No se encontro el usuario")
+    if(result.affected === 0) throw new NotFoundException("No se encontro el usuario")
 
-    await this.usersRepository.remove(existingUser)
-    
     return {id}
   }
 }

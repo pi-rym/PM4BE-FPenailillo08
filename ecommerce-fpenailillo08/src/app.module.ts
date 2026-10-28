@@ -11,6 +11,8 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { CategoriesService } from './modules/categories/categories.service';
 import { ProductsService } from './modules/products/products.service';
+import { JwtModule } from '@nestjs/jwt';
+import { FileUploadModule } from './file-upload/file-upload.module';
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal: true}),
@@ -19,7 +21,12 @@ import { ProductsService } from './modules/products/products.service';
       inject:[ConfigService],
       useFactory: (configService: ConfigService) => typeOrmConfig(configService)
     }),
-    ProductsModule, UsersModule, AuthModule, CategoriesModule, OrdersModule,],
+    ProductsModule, UsersModule, AuthModule, CategoriesModule, OrdersModule, FileUploadModule,
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: {expiresIn: "1h"}
+    })],
   controllers: [AppController],
   providers: [AppService],
 })

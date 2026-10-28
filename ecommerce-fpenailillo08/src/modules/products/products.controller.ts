@@ -3,6 +3,9 @@ import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
 import { AuthGuard } from '../auth/auth.guard';
 import type { ICreateProduct, IUpdateProduct } from './interfaces/product.interface';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../../decorators/roles.decorators';
+import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 
 //Crear todos los endpoints CRUD para Products y Users 
 //(GET, GET{id}, POST, PUT{id}, DELETE{id}).
@@ -11,15 +14,30 @@ import type { ICreateProduct, IUpdateProduct } from './interfaces/product.interf
 export class ProductsController {
 
     constructor(private readonly productsService: ProductsService) {}
-
+    @ApiBearerAuth()
+    @ApiQuery({
+        name: "page",
+        required: false,
+        type: String,
+        description: "Número de página"
+    })
+    @ApiQuery({
+        name: "limit",
+        required: false,
+        type: String,
+        description: "Productos por página"
+    })
     @Get()
-    async getProducts(@Query("page")page:string = "1",@Query("limit")limit:string = "5"): Promise<Product[]> {
+    @Roles("admin")
+    @UseGuards(AuthGuard,RolesGuard)
+    async getProducts(@Query("page")page?:string,@Query("limit")limit?:string): Promise<Product[]> {
         const pageNumber = Number(page)
         const limitNumber = Number(limit)
 
-        //VALIDACION NAN
+        const validPage = !isNaN(pageNumber) && pageNumber > 0 ? pageNumber: 1
+        const validLimit = !isNaN(limitNumber) && limitNumber > 0 ? limitNumber: 5
 
-        return await this.productsService.getProducts(pageNumber,limitNumber);
+        return await this.productsService.getProducts(validPage,validLimit);
     }
 
     @Get("seeder")
@@ -40,7 +58,8 @@ export class ProductsController {
     }
 
     @Put(":id")
-    @UseGuards(AuthGuard)
+    @Roles("admin")
+    @UseGuards(AuthGuard, RolesGuard)
     async updateProduct(@Param("id", ParseUUIDPipe) id:string,@Body() product:IUpdateProduct): Promise<{id:string}>{
         const updatedProduct = await this.productsService.updateProducts(id,product)
         return{id:updatedProduct.id}

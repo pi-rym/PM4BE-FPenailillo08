@@ -11,13 +11,13 @@ export class UsersService {
         return await this.usersRepository.getUsers(page,limit);
     }
 
-    async getUserById(id:string): Promise<User | null>{
+    async getUserById(id:string): Promise<Omit<User, "password" | "isAdmin">>{
         return await this.usersRepository.getUserById(id)
     }
 
-    async createUser(user:CreateUserDto): Promise<User>{
-        return await this.usersRepository.createUser(user)
-    }
+    // async createUser(user:CreateUserDto): Promise<User>{
+    //     return await this.usersRepository.createUser(user)
+    // }
 
     async updateUser(id:string,user:UpdateUserDto): Promise<User>{
         return await this.usersRepository.updateUser(id,user)

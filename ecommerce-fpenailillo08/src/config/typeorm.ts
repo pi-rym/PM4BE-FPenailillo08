@@ -16,7 +16,7 @@ export const typeOrmConfig = (configService: ConfigService,): TypeOrmModuleOptio
     database: configService.get("DB_NAME"),
     synchronize: false,
     logging: true,
-    dropSchema: false,
+    dropSchema: true,
     entities: [User, Product,Category, Order, OrderDetails],
     subscribers: [],
     migrations: [],

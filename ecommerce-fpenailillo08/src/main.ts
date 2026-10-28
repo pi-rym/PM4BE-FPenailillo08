@@ -2,15 +2,23 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { loggerGlobal } from './common/logger/logger.middleware';
 import { ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   //whitelist: true => Todo lo que te envien de mas que no se utilice en el DTO no lo muevas entre capas
   app.useGlobalPipes(new ValidationPipe({whitelist: true}))
-
   app.use(loggerGlobal);
 
-  app.useGlobalPipes(new ValidationPipe())
+   const config = new DocumentBuilder()
+    .setTitle('Proyecto integrador M4-Back')
+    .setDescription('Proyecto desarrolado con NestJS')
+    .setVersion('1.0.0')
+    .addBearerAuth() //Metodo de autenticación
+    .build()
+    const documentFactory = () => SwaggerModule.createDocument(app, config);
+     SwaggerModule.setup('api', app, documentFactory);
+
 
 
   await app.listen(process.env.PORT ?? 3000);
