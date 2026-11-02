@@ -41,7 +41,14 @@ export class UsersRepository {
   }
 
   async getUserByEmail(email:string): Promise<User | null>{
-    return await this.usersRepository.findOneBy({email})
+    return await this.usersRepository.findOne({
+      where:{email},
+      select:{
+        id: true,
+        password: true,  //TypeORM recupera el hash de la contraseña y bcrypt.compare() puede utilizarlo
+        isAdmin: true
+      }
+    })
   }
 
   async createUser(user:CreateUserDto): Promise<User>{
