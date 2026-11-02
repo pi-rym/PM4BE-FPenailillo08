@@ -5,6 +5,7 @@ import { AuthGuard } from '../modules/auth/auth.guard';
 import { RolesGuard } from '../modules/auth/roles.guard';
 import { Roles } from '../decorators/roles.decorators';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam } from '@nestjs/swagger';
+import { Role } from '../common/roles.enum';
 
 @Controller('files')
 export class FileUploadController {
@@ -26,7 +27,7 @@ export class FileUploadController {
         }
     })
     @Post("uploadImage/:id")
-    @Roles("admin")
+    @Roles(Role.Admin)
     @UseGuards(AuthGuard,RolesGuard)
     @UseInterceptors(FileInterceptor("file"))
     async uploadImage(

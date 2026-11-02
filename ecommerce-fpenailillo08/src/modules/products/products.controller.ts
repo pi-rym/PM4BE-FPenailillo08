@@ -7,6 +7,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../../decorators/roles.decorators';
 import { ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
+import { Role } from '../../common/roles.enum';
 
 //Crear todos los endpoints CRUD para Products y Users 
 //(GET, GET{id}, POST, PUT{id}, DELETE{id}).
@@ -29,7 +30,7 @@ export class ProductsController {
         description: "Productos por página"
     })
     @Get()
-    @Roles("admin")
+    @Roles(Role.Admin)
     @UseGuards(AuthGuard,RolesGuard)
     async getProducts(@Query("page")page?:string,@Query("limit")limit?:string): Promise<Product[]> {
         const pageNumber = Number(page)
@@ -61,7 +62,7 @@ export class ProductsController {
 
     @ApiBearerAuth()
     @Put(":id")
-    @Roles("admin")
+    @Roles(Role.Admin)
     @UseGuards(AuthGuard, RolesGuard)
     async updateProduct(@Param("id", ParseUUIDPipe) id:string,@Body() product:UpdateProductDto): Promise<{id:string}>{
         const updatedProduct = await this.productsService.updateProducts(id,product)

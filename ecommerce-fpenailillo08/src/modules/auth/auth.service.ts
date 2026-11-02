@@ -3,6 +3,7 @@ import { UsersRepository } from '../users/users.repository';
 import { CreateUserDto } from '../users/dto/users.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Role } from '../../common/roles.enum';
 
 @Injectable()
 export class AuthService {
@@ -23,7 +24,9 @@ export class AuthService {
 
         if(!validPassword) throw new ForbiddenException("Email o password incorrectos")
 
-        const payload = {id: foundUser.id, roles: foundUser.isAdmin ? "admin": "user"}
+        const payload = {
+            id: foundUser.id , 
+            roles: foundUser.isAdmin ? [Role.Admin] : [Role.User],}
         const token = this.jwtService.sign(payload)
 
         return {message: "Usuario logueado", token}

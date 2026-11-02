@@ -6,6 +6,7 @@ import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
 import { Roles } from '../../decorators/roles.decorators';
 import { RolesGuard } from '../auth/roles.guard';
 import { ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
+import { Role } from '../../common/roles.enum';
 
 //Crear todos los endpoints CRUD para Products y Users 
 //(GET, GET{id}, POST, PUT{id}, DELETE{id}).
@@ -30,7 +31,7 @@ export class UsersController {
         description: "Usuarios por página"
     })
     @Get()
-    @Roles("admin")
+    @Roles(Role.Admin)
     @UseGuards(AuthGuard, RolesGuard)
     async getUsers(@Query("page") page?:string,@Query("limit") limit?:string): Promise<User[]>  {
         const pageNumber = Number(page)
