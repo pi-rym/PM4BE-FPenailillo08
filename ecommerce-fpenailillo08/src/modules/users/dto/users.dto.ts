@@ -1,5 +1,5 @@
 import { ApiHideProperty, ApiProperty, PickType } from "@nestjs/swagger"
-import { IsEmail, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsString, IsStrongPassword, MaxLength, MinLength, Validate } from "class-validator"
+import { IsEmail, IsEmpty, IsNotEmpty, IsNumber, IsOptional, IsString, IsStrongPassword, MaxLength, Min, MinLength, Validate } from "class-validator"
 import { MatchPassword } from "../../../decorators/matchPassword.decorator"
 
 export class CreateUserDto {
@@ -60,6 +60,7 @@ export class CreateUserDto {
         allowNaN: false,
         allowInfinity: false,
     }, {message: "Teléfono debe ser un number"})
+    @Min(0, {message:"Télefono no puede ser negativo"})
     phone!: number
 
     
