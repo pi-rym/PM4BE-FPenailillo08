@@ -38,7 +38,7 @@ export class FileUploadController {
                     message: "Supera el máximo de 200kb"
                 }),
                 new FileTypeValidator({
-                    fileType: /(.jpg | .jpeg | .png | .svg | .webp | .tiff | .avif )/ 
+                    fileType: /^image\/(jpeg|png|svg\+xml|webp|tiff|avif)$/
                 })
             ]
         })) file: Express.Multer.File){

@@ -4,6 +4,7 @@ import { Product } from './entities/product.entity';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ICreateProduct, IProductSeed, IUpdateProduct } from './interfaces/product.interface';
 import { Category } from '../categories/entities/category.entity';
+import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
 
 @Injectable()
 export class ProductsRepository {
@@ -30,26 +31,29 @@ async getProductById(id:string): Promise<Product | null>{
     })
 }
 
-async createProduct(product: ICreateProduct): Promise<Product>{
+async createProduct(product: CreateProductDto): Promise<Product> {
 
-  const existingCategory = await this.categoriesRepository.findOne({
-    where: {id: product.categoryId}
-  })
+    const existingCategory = await this.categoriesRepository.findOne({
+        where: { id: product.categoryId }
+    });
 
-  if(!existingCategory) throw new NotFoundException("Categoria inexistente")
-   const newProduct = this.productsRepository.create({
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    stock: product.stock,
-    category: existingCategory
-  })
-   const savedProduct = await this.productsRepository.save(newProduct)
+    if (!existingCategory) {
+        throw new NotFoundException("Categoría inexistente");
+    }
 
-   return savedProduct
+    const newProduct = this.productsRepository.create({
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        stock: product.stock,
+        imgUrl: product.imgUrl ?? undefined,
+        category: existingCategory
+    });
+
+    return await this.productsRepository.save(newProduct);
 }
 
-async updateProducts(id: string, product: IUpdateProduct): Promise<Product>{
+async updateProducts(id: string, product: UpdateProductDto): Promise<Product>{
   const existingProduct = await this.getProductById(id)
 
   if(!existingProduct) throw new NotFoundException("Producto inexistente")
@@ -65,6 +69,9 @@ async updateProducts(id: string, product: IUpdateProduct): Promise<Product>{
   }
   if(product.description !== undefined){
     existingProduct.description = product.description
+  }
+  if (product.imgUrl !== undefined) {
+    existingProduct.imgUrl = product.imgUrl;
   }
   if(product.categoryId !== undefined){
     const existingCategory = await this.categoriesRepository.findOne({

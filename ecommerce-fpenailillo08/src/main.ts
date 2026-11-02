@@ -1,13 +1,14 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { loggerGlobal } from './common/logger/logger.middleware';
-import { ValidationPipe } from '@nestjs/common';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   //whitelist: true => Todo lo que te envien de mas que no se utilice en el DTO no lo muevas entre capas
   app.useGlobalPipes(new ValidationPipe({whitelist: true}))
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)))
   app.use(loggerGlobal);
 
    const config = new DocumentBuilder()

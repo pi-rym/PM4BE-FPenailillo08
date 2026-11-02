@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
 import { Order } from "../../orders/entities/order.entity";
+import { Exclude } from "class-transformer";
 
 @Entity()
 
@@ -17,10 +18,11 @@ export class User {
         unique: true
     })
     email!: string
+    @Exclude()
     @Column({
         type: "varchar",
         length: 60,
-        select: false
+        select: false,
     })
     password!: string
     @Column({

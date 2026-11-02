@@ -4,6 +4,7 @@ import { Product } from './entities/product.entity';
 import products from '../../common/data/products.json'
 import { CategoriesRepository } from '../categories/categories.repository';
 import { ICreateProduct, IUpdateProduct } from './interfaces/product.interface';
+import { CreateProductDto, UpdateProductDto } from './dto/products.dto';
 
 
 @Injectable()
@@ -22,11 +23,11 @@ export class ProductsService {
         return await this.productsRepository.getProductById(id);
     }
 
-    async createProduct(product: ICreateProduct): Promise<Product>{
+    async createProduct(product: CreateProductDto): Promise<Product>{
         return await this.productsRepository.createProduct(product)
     }
 
-    async updateProducts(id:string,product: IUpdateProduct): Promise<Product>{
+    async updateProducts(id:string,product: UpdateProductDto): Promise<Product>{
         return await this.productsRepository.updateProducts(id,product)
     }
 
